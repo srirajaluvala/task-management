@@ -1,21 +1,27 @@
+import bcrypt from "bcryptjs";
+import AppDataSource from "../config/data-source";
 import { User } from "../entities/User";
 import { UserRepository } from "../repositories/UserRepository";
-import bcrypt from 'bcryptjs';
 
-export class UserService {
-    private userRepository = new UserRepository();
+export const registerUser = async (userData: Partial<User>) => {
+    return await AppDataSource.transaction(async (transactionalEntityManager) => {
+        const userRepo = UserRepository(transactionalEntityManager);
+        const hashedPassword = await bcrypt.hash(userData.password || "", 10);
 
-    async registerUser(userData: Partial<User>) {
-        const hashedPassword = await bcrypt.hash(userData.password || '', 10)
-        return await this.userRepository.createUser({ email: userData.email, password: hashedPassword, role: userData.role })
-    }
+        return await userRepo.createUser({
+            email: userData.email,
+            password: hashedPassword,
+            role: userData.role,
+        });
+    });
+};
 
-    async getUserByEmail(email: string) {
-        return await this.userRepository.findByEmail(email)
-    }
+export const getAllUsers = async () => {
+    const userRepo = UserRepository();
+    return await userRepo.findAllUsers();
+};
 
-    async getAllUsers() {
-        return await this.userRepository.findAllUsers()
-    }
-
-}
+export const getUserByEmail = async (email: string) => {
+    const userRepo = UserRepository();
+    return await userRepo.findByEmail(email);
+};
