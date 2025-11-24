@@ -8,6 +8,7 @@ import {
   profileHandler
 } from '../controllers/auth.controller';
 import projectRoutes from './project.routes';
+import taskRoutes from './task.routes';
 
 export const registerRoutes = (app: Application) => {
   // Auth
@@ -30,4 +31,5 @@ export const registerRoutes = (app: Application) => {
   );
 
   app.use("/projects", projectRoutes);
+  app.use("/", taskRoutes);
 };
