@@ -7,7 +7,7 @@ import {
   loginHandler,
   profileHandler
 } from '../controllers/auth.controller';
-// You will also import project/task controllers
+import projectRoutes from './project.routes';
 
 export const registerRoutes = (app: Application) => {
   // Auth
@@ -29,5 +29,5 @@ export const registerRoutes = (app: Application) => {
     profileHandler
   );
 
-  // TODO: add /users, /projects, /tasks routes
+  app.use("/projects", projectRoutes);
 };
