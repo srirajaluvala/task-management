@@ -16,7 +16,7 @@ export class Project {
   @Column()
   name!: string;
 
-  @Column({ nullable: true })
+  @Column("text", { nullable: true })
   description!: string | null;
 
   @ManyToOne(() => User, (user) => user.projects, { eager: true })

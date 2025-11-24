@@ -1,8 +1,5 @@
 import { DataSource } from 'typeorm';
 import dotenv from 'dotenv';
-import { User } from '../entities/User';
-import { Project } from '../entities/Project';
-import { Task } from '../entities/Task';
 dotenv.config();
 
 export const dataSource = new DataSource({
@@ -10,6 +7,6 @@ export const dataSource = new DataSource({
   url: process.env.DATABASE_URL,
   synchronize: false,
   logging: false,
-  entities: [User, Project, Task],
-  migrations: ['dist/migrations/*.js']
+  entities: ['src/entities/*.ts'],
+  migrations: ['src/migrations/*.ts'],
 });
