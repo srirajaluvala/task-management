@@ -1,19 +1,28 @@
-import express from 'express'
-import dotenv from 'dotenv'
-import userRoutes from './routes/userRoutes'
-import AppDataSource from './config/data-source'
+import 'reflect-metadata';
+import express, { Application } from 'express';
+import cors from 'cors'
+import dotenv from 'dotenv';
+import { dataSource } from './config/data-source';
+import { logger } from './config/logger';
 
-dotenv.config()
+dotenv.config();
 
-console.log(process.env)
+const app: Application = express();
+app.use(cors());
+app.use(express.json());
 
-const app = express()
-app.use(express.json())
+const port = Number(process.env.PORT) || 3000;
 
-app.use('/api', userRoutes)
+dataSource.initialize()
+  .then(async () => {
+    logger.info('Database connected');
 
-const PORT = process.env.PORT || 3000
+    // await seedDefaultAdmin();
 
-AppDataSource.initialize()
-    .then(() => app.listen(PORT, () => console.log(`Server running on port ${PORT}`)))
-    .catch((error) => console.log('Error during Data Source initialization', error))
+    app.listen(port, () => {
+      logger.info(`Server running on port ${port}`);
+    });
+  })
+  .catch((error: unknown) => {
+    logger.error(`DB connection error: ${String(error)}`);
+  });
