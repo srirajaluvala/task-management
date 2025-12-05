@@ -1,22 +1,27 @@
-import { Entity, PrimaryGeneratedColumn, Column } from "typeorm";
+import {
+  Entity,
+  PrimaryGeneratedColumn,
+  Column,
+  ManyToOne,
+  OneToMany
+} from 'typeorm';
+import { User } from './User';
+import { Task } from './Task';
 
-@Entity()
-
+@Entity({ name: 'projects' })
 export class Project {
-    @PrimaryGeneratedColumn()
-    id?: number;
-    @Column()
-    projectName?: string;
-    @Column()
-    description?: string;
-    @Column()
-    startDate?: Date;
-    @Column()
-    endDate?: Date;
-    @Column({ default: "new" })
-    status?: "new" | "active" | "completed" | "on-hold"
-    @Column()
-    ownerId?: number;
-    @Column({ type: "simple-array", nullable: true })
-    memberIds?: number[];
+  @PrimaryGeneratedColumn('uuid')
+  id!: string;
+
+  @Column()
+  name!: string;
+
+  @Column("text", { nullable: true })
+  description!: string | null;
+
+  @ManyToOne(() => User, (user) => user.projects, { eager: true })
+  owner!: User;
+
+  @OneToMany(() => Task, (task) => task.project)
+  tasks!: Task[];
 }

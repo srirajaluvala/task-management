@@ -1,25 +1,33 @@
-import { Entity, PrimaryGeneratedColumn, Column } from "typeorm";
+import { Entity, PrimaryGeneratedColumn, Column, ManyToOne } from "typeorm";
+import { User } from "./User";
+import { Project } from "./Project";
 
-@Entity()
+export type TaskStatus = "todo" | "in_progress" | "done";
+export type TaskPriority = "low" | "medium" | "high";
+
+@Entity({ name: "tasks" })
 export class Task {
-    @PrimaryGeneratedColumn()
-    id?: number;
+  @PrimaryGeneratedColumn("uuid")
+  id!: string;
 
-    @Column()
-    title?: string;
+  @Column()
+  title!: string;
 
-    @Column()
-    description?: string;
+  @Column("text", { nullable: true })
+  description!: string | null;
 
-    @Column()
-    dueDate?: Date;
+  @Column({ type: "varchar", default: "medium" })
+  priority!: TaskPriority;
 
-    @Column({ default: "pending" })
-    status?: "pending" | "in-progress" | "completed";
+  @Column({ type: "varchar", default: "todo" })
+  status!: TaskStatus;
 
-    @Column()
-    assigneeId?: number;
+  @Column({ type: "timestamptz", nullable: true })
+  dueDate!: Date | null;
 
-    @Column()
-    projectId?: number;
+  @ManyToOne(() => User, (user) => user.tasks, { eager: true })
+  assignedTo!: User;
+
+  @ManyToOne(() => Project, (project) => project.tasks, { eager: true })
+  project!: Project;
 }
