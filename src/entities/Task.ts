@@ -4,15 +4,6 @@ import { Project } from "./Project";
 
 export type TaskStatus = "todo" | "in_progress" | "done";
 export type TaskPriority = "low" | "medium" | "high";
-import { getMetadataArgsStorage } from "typeorm";
-
-setTimeout(() => {
-  const cols = getMetadataArgsStorage().columns.filter(
-    (c) => c.target === Task
-  );
-  console.log(">>> Task columns metadata:");
-  console.log(cols);
-}, 2000);
 
 @Entity({ name: "tasks" })
 export class Task {

@@ -1,11 +1,10 @@
 import { Request, Response } from "express";
 import { createProjectService } from "../services/project.service";
-import { CreateProjectDto } from "../dto/project.dto";
 
 const service = createProjectService();
 
 export const createProjectHandler = async (req: Request, res: Response) => {
-  const body = req.body as CreateProjectDto;
+  const body = req.body;
   const user = req.user;
   if (!user) return res.status(401).json({ message: "Unauthorized" });
 

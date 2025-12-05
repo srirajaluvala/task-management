@@ -63,7 +63,7 @@ export const createTaskService = (): TaskService => {
     const cacheKey = taskListKey(projectId, userId);
 
     const cached = await redisClient.get(cacheKey);
-    if (cached) return JSON.parse(cached) as Task[];
+    if (cached) return JSON.parse(cached);
 
     let tasks: Task[];
 

@@ -6,7 +6,7 @@ const service = createTaskService();
 
 export const createTaskHandler = async (req: Request, res: Response) => {
   const projectId = req.params.projectId;
-  const body = req.body as CreateTaskDto;
+  const body = req.body;
 
   if (!req.user) return res.status(401).json({ message: "Unauthorized" });
 
@@ -33,7 +33,7 @@ export const listTasksHandler = async (req: Request, res: Response) => {
 
 export const updateStatusHandler = async (req: Request, res: Response) => {
   const taskId = req.params.id;
-  const body = req.body as UpdateTaskStatusDto;
+  const body = req.body;
 
   if (!req.user) return res.status(401).json({ message: "Unauthorized" });
 

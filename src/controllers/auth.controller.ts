@@ -1,42 +1,49 @@
-import { Request, Response } from 'express';
-import { createAuthService } from '../services/auth.service';
-import { RegisterDto, LoginDto } from '../dto/auth.dto';
-import { logger } from '../config/logger';
-import { createUserRepository } from '../repositories/user.repositories';
+import { Request, Response } from "express";
+import asyncHandler from "express-async-handler";
+import { createAuthService } from "../services/auth.service";
+import { RegisterDto, LoginDto } from "../dto/auth.dto";
+import { logger } from "../config/logger";
+import { createUserRepository } from "../repositories/user.repositories";
+import { sendSuccess } from "../utils/response";
+import { plainToInstance } from "class-transformer";
+import { UserResponseDto } from "../dto/user-response.dto";
+import { createError } from "../utils/api-error";
 
 const userRepo = createUserRepository();
 const authService = createAuthService(userRepo);
 
-export const registerHandler = async (req: Request, res: Response) => {
-  const body = req.body as RegisterDto;
-  try {
+export const registerHandler = asyncHandler(
+  async (req: Request, res: Response): Promise<void> => {
+    const body = req.body;
+
     const user = await authService.register(body.email, body.password, body.role);
+    if (!user) throw createError("User registration failed", 400);
+
     logger.info(`User registered: ${user.email}`);
-    return res.status(201).json({
-      id: user.id,
-      email: user.email,
-      role: user.role
+
+    const transformedUser = plainToInstance(UserResponseDto, user, {
+      excludeExtraneousValues: true
     });
-  } catch (error) {
-    logger.error(`Register error: ${String(error)}`);
-    return res.status(400).json({ message: 'Unable to register' });
-  }
-};
 
-export const loginHandler = async (req: Request, res: Response) => {
-  const body = req.body as LoginDto;
-  try {
+    sendSuccess(res, 201, "User registered successfully", transformedUser);
+  }
+);
+
+export const loginHandler = asyncHandler(
+  async (req: Request, res: Response): Promise<void> => {
+    const body = req.body;
+
     const token = await authService.login(body.email, body.password);
-    return res.json({ token });
-  } catch (error) {
-    logger.error(`Login error: ${String(error)}`);
-    return res.status(401).json({ message: 'Invalid credentials' });
-  }
-};
+    if (!token) throw createError("Invalid credentials", 401);
 
-export const profileHandler = async (req: Request, res: Response) => {
-  if (!req.user) {
-    return res.status(401).json({ message: 'Unauthorized' });
+    sendSuccess(res, 200, "Login successful", { token });
   }
-  return res.json({ user: req.user });
-};
+);
+
+export const profileHandler = asyncHandler(
+  async (req: Request, res: Response): Promise<void> => {
+    if (!req.user) throw createError("Unauthorized", 401);
+
+    sendSuccess(res, 200, "Profile fetched successfully", { user: req.user });
+  }
+);

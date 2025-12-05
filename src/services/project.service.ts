@@ -58,7 +58,7 @@ export const createProjectService = (): ProjectService => {
   const listForAdmin = async (): Promise<Project[]> => {
     const cached = await redisClient.get(adminProjectsKey);
     if (cached) {
-      return JSON.parse(cached) as Project[];
+      return JSON.parse(cached);
     }
 
     const projects = await repo.listAll();
@@ -74,7 +74,7 @@ export const createProjectService = (): ProjectService => {
 
     const cached = await redisClient.get(cacheKey);
     if (cached) {
-      return JSON.parse(cached) as Project[];
+      return JSON.parse(cached);
     }
 
     const projects = await repo.listForUser(userId);
